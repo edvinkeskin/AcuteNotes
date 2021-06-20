@@ -33,7 +33,10 @@ public class Note {
     }
 
     public Note getPreviousNote() {
-        return previousNote;
+        if(previousNote != null) {
+            return previousNote;
+        }
+        return this;
     }
 
     public String getId() {

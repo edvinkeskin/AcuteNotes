@@ -31,20 +31,11 @@ public class ScrollingActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                id = "Note" + notes++;
-                toolBarLayout.setTitle(id);
-                note = new Note(id,note);
+
                 EditText input = findViewById(R.id.input);
                 input.setText(note.getNote());
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_scrolling, menu);
-        return true;
     }
 
     @Override
@@ -53,7 +44,36 @@ public class ScrollingActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if(id == R.id.prev) {
+            prevNote();
+            EditText input = findViewById(R.id.input);
+            input.setText(note.getNote());
+            return true;
+        } else if(id == R.id.next) {
+            nextNote();
+            EditText input = findViewById(R.id.input);
+            input.setText(note.getNote());
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void prevNote() {
+        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        note = note.getPreviousNote();
+        id = note.getId();
+        toolBarLayout.setTitle(id);
+    }
+
+    private void nextNote() {
+        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        if(note.getNextNote() == null) {
+            id = "Note" + notes++;
+            note = new Note(id,note);
+        } else {
+            note = note.getNextNote();
+            id = note.getId();
+        }
+        toolBarLayout.setTitle(id);
     }
 }

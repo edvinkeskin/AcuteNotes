@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu
       xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:title="Home" />
-    <item android:title="Profile" />
-    <item android:title="Setting" />
+    <item android:title="Previous Note"
+          android:enabled="true"
+          android:id="@+id/prev"/>
+    <item android:title="Next Note"
+          android:enabled="true"
+          android:id="@+id/next"/>
 
 </menu>
