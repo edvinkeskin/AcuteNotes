@@ -14,9 +14,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways|snap"
-            android:background="@color/black"
+            android:background="@color/white"
             android:layout_gravity="bottom"
-            app:itemTextColor="@color/white"
+            app:itemTextColor="@color/black"
             app:menu="@menu/bottom_nav"
     />
     <com.google.android.material.appbar.AppBarLayout
@@ -33,7 +33,7 @@
                 android:layout_height="match_parent"
                 app:toolbarId="@+id/toolbar"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:contentScrim="?attr/colorPrimary">
+                app:contentScrim="?attr/colorPrimaryVariant">
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -50,7 +50,7 @@
             android:layout_margin="@dimen/fab_margin"
             app:layout_anchor="@id/app_bar"
             app:layout_anchorGravity="bottom|end"
-            app:srcCompat="@android:drawable/ic_dialog_email"
+            app:srcCompat="@android:drawable/ic_input_add"
             android:contentDescription="@string/add_note"/>
     <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
