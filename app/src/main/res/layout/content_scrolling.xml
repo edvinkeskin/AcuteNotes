@@ -17,6 +17,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:autofillHints="false"
+            android:hint="@string/enter_note"
 
     />
 

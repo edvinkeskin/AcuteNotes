@@ -1,8 +1,10 @@
 package com.acute.note0;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import org.jetbrains.annotations.NotNull;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static int notes = 1;
@@ -26,14 +29,26 @@ public class ScrollingActivity extends AppCompatActivity {
         id = "Note" + notes++;
         note = new Note(id);
         toolBarLayout.setTitle(id);
+        toolbar.setTitle(id);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                EditText input = findViewById(R.id.input);
-                input.setText(note.getNote());
+                nextNote();
+            }
+        });
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NotNull MenuItem item) {
+                int id = item.getItemId();
+                if(id == R.id.prev) {
+                    prevNote();
+                } else if(id == R.id.next) {
+                    nextNote();
+                }
+                return true;
             }
         });
     }
@@ -45,28 +60,31 @@ public class ScrollingActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if(id == R.id.prev) {
+            Log.v("test","test");
             prevNote();
-            EditText input = findViewById(R.id.input);
-            input.setText(note.getNote());
             return true;
         } else if(id == R.id.next) {
+            Log.v("test2","test2");
             nextNote();
-            EditText input = findViewById(R.id.input);
-            input.setText(note.getNote());
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void prevNote() {
-        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        EditText input = findViewById(R.id.input);
+        note.setNote(input.getText().toString());
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         note = note.getPreviousNote();
+        input.setText(note.getNote());
         id = note.getId();
-        toolBarLayout.setTitle(id);
+        toolbar.setTitle(id);
     }
 
     private void nextNote() {
-        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        EditText input = findViewById(R.id.input);
+        note.setNote(input.getText().toString());
         if(note.getNextNote() == null) {
             id = "Note" + notes++;
             note = new Note(id,note);
@@ -74,6 +92,7 @@ public class ScrollingActivity extends AppCompatActivity {
             note = note.getNextNote();
             id = note.getId();
         }
-        toolBarLayout.setTitle(id);
+        input.setText(note.getNote());
+        toolbar.setTitle(id);
     }
 }
