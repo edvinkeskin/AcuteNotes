@@ -1,7 +1,9 @@
 package com.acute.note0;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -9,16 +11,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Scanner;
-
 public class ScrollingActivity extends AppCompatActivity {
-    private static int notes = 1;
+    private static int noteCount;
     private static String id;
     private static Note note;
-    //note status true if cached, false if it has to be fetched
-    private static HashMap<String,Boolean> noteStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,17 +24,23 @@ public class ScrollingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         CollapsingToolbarLayout toolBarLayout = findViewById(R.id.toolbar_layout);
 
-        id = "Note" + notes++;
-        note = new Note(id);
+        noteCount = readNoteCount();
+        //if previous notepad exists load it else create new note/notepad
+        if(noteCount > 1) {
+            loadNotepad(noteCount);
+        } else {
+            id = "Note" + noteCount++;
+            note = new Note(id);
+
+        }
         toolBarLayout.setTitle(id);
         toolbar.setTitle(id);
 
-        noteStatus = new HashMap<>();
-        String notepad[] = readNotepad();
-
+        //add note fab
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> nextNote());
 
+        //bottom tab control
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -53,7 +56,8 @@ public class ScrollingActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        writeNote(id);
+        writeNoteCount();
     }
 
     private void prevNote() {
@@ -63,7 +67,6 @@ public class ScrollingActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         note = note.getPreviousNote();
         id = note.getId();
-        readNote(id);
 
         input.setText(note.getNote());
         toolbar.setTitle(id);
@@ -73,14 +76,13 @@ public class ScrollingActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         EditText input = findViewById(R.id.input);
         note.setNote(input.getText().toString());
+        writeNote(id);
         if(note.getNextNote() == null) {
-            id = "Note" + notes++;
+            id = "Note" + noteCount++;
             note = new Note(id,note);
         } else {
-            writeNote(id);
             note = note.getNextNote();
             id = note.getId();
-            readNote(id);
         }
 
         input.setText(note.getNote());
@@ -89,43 +91,43 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void writeNote(String filename) {
         //WRITE
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(filename, Context.MODE_PRIVATE);
-            fos.write(note.getNote().getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Log.v("test", note.getNote());
+        editor.putString(filename, note.getNote());
+        editor.apply();
+
+    }
+
+    private void writeNoteCount() {
+        //WRITE
+        Log.v("test","count" + noteCount);
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("noteCount", noteCount);
+        editor.apply();
 
     }
 
     private void readNote(String filename) {
-        //READ
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput(filename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        Scanner scanner = new Scanner(fis);
-        scanner.useDelimiter("\\Z");
-        String content = scanner.next();
-        scanner.close();
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Log.v("test", sharedPref.getString(filename, "invalid"));
+        note.setNote(sharedPref.getString(filename, "invalid"));
     }
 
-    private String[] readNotepad() {
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput("notepad");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    private int readNoteCount() {
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getInt("noteCount", 1);
+    }
+
+    private void loadNotepad(int noteCount) {
+        Log.v("test","count" + noteCount);
+        id = "Note" + (noteCount-1);
+        note = new Note(id);
+        for(int i = noteCount-2; i >= 1; i--) {
+            id = "Note" + i;
+            note = new Note(note,id);
+            readNote(id);
         }
-        Scanner scanner = new Scanner(fis);
-        scanner.useDelimiter("\\Z");
-        String content = scanner.next();
-        scanner.close();
     }
 }

@@ -24,6 +24,18 @@ public class Note {
         nextNote = null;
     }
 
+    Note(Note nextNote, String id) {
+        this.id = id;
+
+        this.nextNote = nextNote;
+        this.nextNote.setPreviousNote(this);
+        previousNote = null;
+    }
+
+    private void setPreviousNote(Note previousNote) {
+        this.previousNote = previousNote;
+    }
+
     public void setNextNote(Note nextNote) {
         this.nextNote = nextNote;
     }
