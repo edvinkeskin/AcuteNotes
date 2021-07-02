@@ -10,6 +10,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.snackbar.Snackbar;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static int noteCount;
@@ -32,6 +33,10 @@ public class ScrollingActivity extends AppCompatActivity {
             id = "Note" + noteCount++;
             note = new Note(id);
 
+        }
+
+        if(toolbar.isOverflowMenuShowing()) {
+            Log.v("test", "work");
         }
         toolBarLayout.setTitle(id);
         toolbar.setTitle(id);
@@ -56,6 +61,8 @@ public class ScrollingActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        EditText input = findViewById(R.id.input);
+        note.setNote(input.getText().toString());
         writeNote(id);
         writeNoteCount();
     }
@@ -91,9 +98,9 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void writeNote(String filename) {
         //WRITE
+        Log.v("test",note.getNote());
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        Log.v("test", note.getNote());
         editor.putString(filename, note.getNote());
         editor.apply();
 
@@ -111,7 +118,6 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void readNote(String filename) {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        Log.v("test", sharedPref.getString(filename, "invalid"));
         note.setNote(sharedPref.getString(filename, "invalid"));
     }
 
@@ -121,13 +127,19 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private void loadNotepad(int noteCount) {
-        Log.v("test","count" + noteCount);
+        EditText input = findViewById(R.id.input);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
         id = "Note" + (noteCount-1);
         note = new Note(id);
         for(int i = noteCount-2; i >= 1; i--) {
             id = "Note" + i;
+            Log.v("test",id);
             note = new Note(note,id);
             readNote(id);
         }
+
+        input.setText(note.getNote());
+        toolbar.setTitle(id);
     }
 }
