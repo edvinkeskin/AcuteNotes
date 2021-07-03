@@ -21,6 +21,6 @@
             android:autofillHints="false"
             android:hint="@string/enter_note"
 
-    />
+            android:paddingLeft="15dp" android:paddingRight="15dp"/>
 
 </androidx.core.widget.NestedScrollView>

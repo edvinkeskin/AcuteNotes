@@ -5,12 +5,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import com.google.android.material.snackbar.Snackbar;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static int noteCount;
@@ -22,8 +22,8 @@ public class ScrollingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         CollapsingToolbarLayout toolBarLayout = findViewById(R.id.toolbar_layout);
+        AppBarLayout toolLayout = findViewById(R.id.app_bar);
 
         noteCount = readNoteCount();
         //if previous notepad exists load it else create new note/notepad
@@ -35,11 +35,29 @@ public class ScrollingActivity extends AppCompatActivity {
 
         }
 
-        if(toolbar.isOverflowMenuShowing()) {
+        if(toolBarLayout.isTitleEnabled()) {
             Log.v("test", "work");
         }
         toolBarLayout.setTitle(id);
-        toolbar.setTitle(id);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        toolLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    isShow = true;
+                    toolbar.setTitle(" ");
+                } else if (isShow) {
+                    isShow = false;
+                    toolbar.setTitle(id);
+                }
+            }
+        });
 
         //add note fab
         FloatingActionButton fab = findViewById(R.id.fab);
